@@ -7,9 +7,16 @@ use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-      $data = Contact::all();
+      if ($request->get('search')) {
+        $data = Contact::where('email', 'LIKE', '%' . $request->get('search') . '%')
+          ->orWhere('number_phone', 'LIKE', '%' . $request->get('search') . '%')
+          ->orderBy('id', 'DESC')->get();
+      } else {
+        $data = Contact::orderBy('id', 'DESC')->paginate(20);
+      }
+     
 
       return response()->json($data, 200);
     }
